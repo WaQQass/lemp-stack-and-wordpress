@@ -1,0 +1,49 @@
+- name: Remove LEMP stack and WordPress
+  hosts: webservers
+  become: yes
+  vars:
+    php_version: "8.1"
+  tasks:
+    - name: Stop and disable PHP-FPM service
+      systemd:
+        name: php{{ php_version }}-fpm
+        state: stopped
+        enabled: no
+
+    - name: Remove Nginx configuration file
+      file:
+        path: /etc/nginx/sites-available/default
+        state: absent
+
+    - name: Remove MySQL database for WordPress
+      mysql_db:
+        name: waqasdatabase
+        state: absent
+
+    - name: Remove MySQL user for WordPress
+      mysql_user:
+        name: waqas
+        host: localhost
+        state: absent
+
+    - name: Remove MySQL Python module
+      apt:
+        name: python3-mysqldb
+        state: absent
+
+    - name: Remove PHP and required extensions
+      apt:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - php-fpm
+        - php-mysql
+        - php-cli
+        - php-gd
+        - php-curl
+
+    - name: Remove WordPress installation directory
+      file:
+        path: /var/www/html/wordpress
+        state: absent
+

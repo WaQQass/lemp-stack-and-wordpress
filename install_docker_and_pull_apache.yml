@@ -1,0 +1,27 @@
+---
+- name: Install Docker and Pull Apache2 Image
+  hosts: webservers  # Replace with the appropriate host or group from your inventory
+  become: yes
+
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull Apache2 image
+      docker_image:
+        name: httpd
+        tag: latest
+        source: pull
+
+
+
+
+

@@ -1,0 +1,33 @@
+---
+- name: Remove LEMP stack and WordPress
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Stop and disable PHP-FPM service
+      service:
+        name: php{{ php_version }}-fpm
+        state: stopped
+        enabled: no
+
+    - name: Remove Nginx configuration file
+      file:
+        path: /etc/nginx/sites-available/default
+        state: absent
+
+    - name: Remove MySQL database for WordPress
+      mysql_db:
+        name: wordpress
+        state: absent
+
+    - name: Remove MySQL user for WordPress
+      mysql_user:
+        name: wp_user
+        host: localhost
+        state: absent
+
+    - name: Remove MySQL Python module
+      apt:
+        name: python3-mysqldb
+        state: absent
+
